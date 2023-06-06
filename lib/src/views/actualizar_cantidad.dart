@@ -2,8 +2,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hola_mundo/src/providers/producto_provider.dart';
+import '../providers/producto_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'listarProducto.dart';
 
 // ignore: use_key_in_widget_constructors
 class ActualizarCantidad extends StatefulWidget {
@@ -16,11 +17,12 @@ class ActualizarCantidad extends StatefulWidget {
 }
 
 class _ActualizarCantidad extends State<ActualizarCantidad> {
+  late final int? _id = widget._producto!.id;
   late final String _codigo = widget._producto!.codigo;
   late final String _nombre = widget._producto!.nombre;
   late final String? _detalles = widget._producto!.detalles;
   late final int _cantidad = widget._producto!.cantidad;
-  late String _cantidadActu;
+  late int _cantidadActu = 0;
   late final int _precio = widget._producto!.precio;
   late final String _foto = widget._producto!.foto;
 
@@ -55,6 +57,7 @@ class _ActualizarCantidad extends State<ActualizarCantidad> {
 
   Widget _buildCantidad() {
     return TextFormField(
+      keyboardType: const TextInputType.numberWithOptions(decimal: false),
       decoration: const InputDecoration(labelText: 'Cantidad'),
       initialValue: '$_cantidad',
       validator: (String? value) {
@@ -68,7 +71,7 @@ class _ActualizarCantidad extends State<ActualizarCantidad> {
         return null;
       },
       onSaved: (String? value) {
-        _cantidadActu = value!;
+        _cantidadActu = int.parse(value!);
       },
     );
   }
@@ -85,7 +88,7 @@ class _ActualizarCantidad extends State<ActualizarCantidad> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Actualizar Cantidad"),
+        title: const Text('Actualizar Cantidad'),
         backgroundColor: Colors.orange[80],
       ),
       body: Center(
@@ -125,6 +128,31 @@ class _ActualizarCantidad extends State<ActualizarCantidad> {
                             return;
                           }
                           _formKey.currentState!.save();
+
+                          actualizarPrecio();
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SimpleDialog(
+                                title: Text(
+                                    'Cantidad actualizada a $_cantidadActu'),
+                                children: <Widget>[
+                                  Center(
+
+                                      child: TextButton(
+                                          child: const Text('Ok'),
+
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        listarProducto()));
+                                          })),
+                                ],
+                              );
+                            },
+                          );
                         },
                       )
                     ],
@@ -136,5 +164,23 @@ class _ActualizarCantidad extends State<ActualizarCantidad> {
         ),
       ),
     );
+  }
+
+  obtenerCantidadActual() async {
+    ProductoModel? p = await ProductoProvider.getProductoPorId(_id!);
+    int cantidadActual = p!.cantidad;
+  }
+
+  actualizarPrecio() async {
+    ProductoProvider.actualizarProducto(ProductoModel(
+        id: _id,
+        codigo: _codigo,
+        nombre: _nombre,
+        precio: _precio,
+        detalles: _detalles,
+        cantidad: _cantidadActu,
+        foto: _foto,
+        creadoPor: 1));
+        
   }
 }

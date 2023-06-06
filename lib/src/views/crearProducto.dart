@@ -1,7 +1,10 @@
+// ignore: file_names
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:hola_mundo/src/providers/producto_provider.dart';
+import 'package:hola_mundo/src/views/listarProducto.dart';
 
 // ignore: use_key_in_widget_constructors
 class CrearProducto extends StatefulWidget {
@@ -10,11 +13,11 @@ class CrearProducto extends StatefulWidget {
 }
 
 class _CrearProducto extends State<CrearProducto> {
-  late String _codigo;
-  late String _nombre;
-  late String _detalles;
-  late String _cantidad;
-  late String _precio;
+  late String _codigo = "";
+  late String _nombre = "";
+  late String _detalles = "";
+  late int _cantidad = 0;
+  late int _precio = 0;
 
   File? file;
   ImagePicker image = ImagePicker();
@@ -23,8 +26,22 @@ class _CrearProducto extends State<CrearProducto> {
 
   Widget _buildCodigo() {
     return TextFormField(
+<<<<<<< HEAD
       decoration: const InputDecoration(labelText: 'Codigo'),
       validator: validatorValor,
+=======
+      key: Key('codigo'),
+      decoration: const InputDecoration(labelText: 'Código'),
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'El código es requerido';
+        }
+        if (value.length < 2) {
+          return 'El código debe tener mínimo 2 caracteres';
+        }
+        return null;
+      },
+>>>>>>> 79552e875b76091368bde93d23030dacf6edb452
       onSaved: (String? value) {
         _codigo = value!;
       },
@@ -43,6 +60,7 @@ class _CrearProducto extends State<CrearProducto> {
 
   Widget _buildNombre() {
     return TextFormField(
+      key: const Key('CampoNombre'),
       decoration: const InputDecoration(labelText: 'Nombre'),
       validator: (String? value) {
         if (value!.isEmpty) {
@@ -58,6 +76,7 @@ class _CrearProducto extends State<CrearProducto> {
 
   Widget _buildDetalle() {
     return TextFormField(
+      key: const Key('campoDetalles'),
       decoration: const InputDecoration(labelText: 'Detalles'),
       onSaved: (String? value) {
         _detalles = value!;
@@ -67,6 +86,8 @@ class _CrearProducto extends State<CrearProducto> {
 
   Widget _buildCantidad() {
     return TextFormField(
+      key: const Key('CampoCantidad'),
+      keyboardType: TextInputType.number,
       decoration: const InputDecoration(labelText: 'Cantidad'),
       validator: (String? value) {
         if (value!.isEmpty) {
@@ -79,16 +100,19 @@ class _CrearProducto extends State<CrearProducto> {
         return null;
       },
       onSaved: (String? value) {
-        _cantidad = value!;
+        _cantidad = int.parse(value!);
       },
     );
   }
 
   Widget _builPrecio() {
     return TextFormField(
+      key: const Key('CampoPrecio'),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: const InputDecoration(labelText: 'Precio'),
       validator: (String? value) {
-        if (value!.isEmpty) {
+        try{
+if (value!.isEmpty) {
           return 'El precio es requerido';
         }
         if (int.parse(value) <= 0) {
@@ -96,9 +120,14 @@ class _CrearProducto extends State<CrearProducto> {
         }
 
         return null;
+        } catch(ex) {
+          print('numero invalido');
+        }
+        
       },
       onSaved: (String? value) {
-        _precio = value!;
+        _precio = int.parse(value!);
+
       },
     );
   }
@@ -170,6 +199,8 @@ class _CrearProducto extends State<CrearProducto> {
                         height: 50,
                       ),
                       ElevatedButton(
+                        key: Key('btnEnviar'),
+                        
                         child: const Text(
                           'Enviar',
                           style: TextStyle(color: Colors.white, fontSize: 16),
@@ -179,6 +210,14 @@ class _CrearProducto extends State<CrearProducto> {
                             return;
                           }
                           _formKey.currentState!.save();
+
+                          guardarDatos(
+                              _codigo, _nombre, _precio, _detalles, _cantidad);
+
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => listarProducto()));
                         },
                       )
                     ],
@@ -195,16 +234,38 @@ class _CrearProducto extends State<CrearProducto> {
   getCam() async {
     // ignore: deprecated_member_use
     var img = await image.getImage(source: ImageSource.camera);
+   
+    if(img !=null){
+
+    }
     setState(() {
       file = File(img!.path);
     });
+   
   }
 
   getGall() async {
     // ignore: deprecated_member_use
     var img = await image.getImage(source: ImageSource.gallery);
+    final imagen= await img!.readAsBytes();
+    if(img!=null){
+
+    }
     setState(() {
       file = File(img!.path);
     });
+      
+  }
+
+  guardarDatos(codigo, nombre, precio, detalles, cantidad) async {
+    await ProductoProvider.nuevoProducto(ProductoModel(
+        codigo: codigo,
+        nombre: nombre,
+        precio: precio,
+        detalles: detalles,
+        cantidad: cantidad,
+        foto:  'assets/cementoB.jpeg',
+        creadoPor: 1,
+        id: null));
   }
 }

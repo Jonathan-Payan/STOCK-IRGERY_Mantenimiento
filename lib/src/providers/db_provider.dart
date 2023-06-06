@@ -33,11 +33,41 @@ class DBProvider {
       version: 1,
       onOpen: (db) {},
       onCreate: (db, version) async {
+<<<<<<< HEAD
         await crearUsuario(db);
 
         await crearProducto(db);
 
         await crearFlujoInventario(db);
+=======
+        await db.execute('CREATE TABLE Usuarios ('
+            'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+            'nombre TEXT NOT NULL,'
+            'correo TEXT NOT NULL,'
+            'contrasenia TEXT NOT NULL'
+            ')');
+
+        await db.execute('CREATE TABLE Productos ('
+            'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+            'codigo TEXT NOT NULL,'
+            'nombre TEXT NOT NULL,'
+            'precio INTEGER NOT NULL,'
+            'detalles TEXT,'
+            'cantidad INTEGER NOT NULL,'
+            'foto TEXT,'
+            'creadoPor INTEGER,'
+            'FOREIGN KEY(creadoPor) REFERENCES Usuarios(id)'
+            ')');
+
+        await db.execute('CREATE TABLE FlujoInventarios ('
+            'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+            'fecha TEXT,'
+            'tipo TEXT,'
+            'cantidad INTEGER NOT NULL,'
+            'idProducto INTEGER,'
+            'FOREIGN KEY(idProducto) REFERENCES Productos(id)'
+            ')');
+>>>>>>> 79552e875b76091368bde93d23030dacf6edb452
       },
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');

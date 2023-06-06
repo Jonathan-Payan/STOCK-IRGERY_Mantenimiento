@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:hola_mundo/src/providers/usuario_provider.dart';
 import 'package:hola_mundo/src/providers/producto_provider.dart';
 import 'package:hola_mundo/src/views/crearProducto.dart';
-import 'package:hola_mundo/src/views/editarProducto.dart';
 import 'package:hola_mundo/src/views/listarProducto.dart';
-import 'package:hola_mundo/src/views/listarProductosTarjetaAlfetic.dart';
 import 'package:hola_mundo/src/views/listarUsuario.dart';
 
 import 'actualizar_cantidad.dart';
 
-class listarProductoTarjeta extends StatefulWidget {
+class listarProductoTarjetaAlfetic extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _listarProductoTarjeta();
+    return _listarProductoTarjetaAlfetic();
   }
 }
 
-class _listarProductoTarjeta extends State<listarProductoTarjeta> {
+class _listarProductoTarjetaAlfetic extends State<listarProductoTarjetaAlfetic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,16 +87,13 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
               }),
           IconButton(
               icon: Icon(Icons.text_rotate_vertical),
-              tooltip: "Ordenar alfabeticamente",
-              onPressed: () => {
-                 Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => listarProductoTarjetaAlfetic()))
-              }),
+              tooltip: "Buscar",
+              onPressed: () => {}),
         ],
       ),
       body: Center(
           child: FutureBuilder(
-        future: ProductoProvider.getProductos(),
+        future: ProductoProvider.getProductosOrdenados(),
         builder: (BuildContext context,
             AsyncSnapshot<List<ProductoModel?>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
@@ -124,14 +119,13 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
                             fontSize: 12.0, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Precio: ${snapshot.data![index]!.precio} ',
+                        '${snapshot.data![index]!.precio} '.toUpperCase(),
                         style: const TextStyle(
                             fontSize: 12.0, fontWeight: FontWeight.bold),
                       ),
                       //Text('Detalle: ${snapshot.data![index]!.detalles} '),
                       Text('Cantidad: ${snapshot.data![index]!.cantidad} '),
-                       Text('Detalles: ${snapshot.data![index]!.detalles} '),
-                      TextButton.icon(
+                      ElevatedButton.icon(
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -142,17 +136,6 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
                         icon: const Icon(Icons.edit),
                         label: const Text('Cantidad'),
                       ),
-                      TextButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) =>
-                                          EditarProducto(snapshot.data?[index])));
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: const Text('Editar Producto'),
-                          ),
                     ],
                   ),
                 );
@@ -217,7 +200,7 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
 
     //imprimir los productos y usuarios creados
 */
-    ProductoProvider.getProductos();
+    ProductoProvider.getProductosOrdenados();
     //  ProductoProvider.nuevoProducto(ProductoModel(id: 2, codigo: 'sss', nombre: 'destornillador', creadoPor: 7));
   }
 

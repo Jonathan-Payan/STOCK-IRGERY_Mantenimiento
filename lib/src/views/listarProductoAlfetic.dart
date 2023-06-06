@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:hola_mundo/src/providers/usuario_provider.dart';
 import 'package:hola_mundo/src/providers/producto_provider.dart';
 import 'package:hola_mundo/src/views/crearProducto.dart';
-import 'package:hola_mundo/src/views/editarProducto.dart';
-import 'package:hola_mundo/src/views/listarProducto.dart';
-import 'package:hola_mundo/src/views/listarProductosTarjetaAlfetic.dart';
+import 'package:hola_mundo/src/views/listarProductosTarjeta.dart';
 import 'package:hola_mundo/src/views/listarUsuario.dart';
 
 import 'actualizar_cantidad.dart';
+import 'editarProducto.dart';
+import 'listarProducto.dart';
 
-class listarProductoTarjeta extends StatefulWidget {
+class listarProductoAlfetic extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _listarProductoTarjeta();
+    return _listarProductoAlfetic();
   }
 }
 
-class _listarProductoTarjeta extends State<listarProductoTarjeta> {
+class _listarProductoAlfetic extends State<listarProductoAlfetic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //--- Menu HAMBURGUESA -------------------------------
       drawer: Drawer(
         child: Container(
           child: Column(
@@ -78,84 +79,70 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
         ),
       ),
       appBar: AppBar(
-        title: Text("Lista Productos T", style: TextStyle(fontSize: 14)),
+        title: Text(
+          "Lista Productos",
+          style: TextStyle(fontSize: 14),
+        ),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.table_view_rounded),
-              tooltip: "listar Producto ",
+              icon: Icon(Icons.view_array_rounded),
+              tooltip: "listar Producto Tarjeta",
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => listarProducto()));
+                    MaterialPageRoute(builder: (_) => listarProductoTarjeta()));
               }),
           IconButton(
               icon: Icon(Icons.text_rotate_vertical),
               tooltip: "Ordenar alfabeticamente",
-              onPressed: () => {
-                 Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => listarProductoTarjetaAlfetic()))
-              }),
+              onPressed: () => {}),
         ],
       ),
+
       body: Center(
           child: FutureBuilder(
-        future: ProductoProvider.getProductos(),
+        future: ProductoProvider.getProductosOrdenados(),
         builder: (BuildContext context,
             AsyncSnapshot<List<ProductoModel?>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2),
+            return ListView.builder(
               itemCount: snapshot.data?.length,
               itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17)),
-                  color: Colors.white70,
-                  elevation: 10.0,
-                  child: Column(
-                    children: [
-                      Flexible(child: Image.asset(snapshot.data![index]!.foto)),
-
-                      //Text('${snapshot.data![index]!.codigo} '),
-                      Text(
-                        '${snapshot.data![index]!.nombre} '.toUpperCase(),
-                        style: const TextStyle(
-                            fontSize: 12.0, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Precio: ${snapshot.data![index]!.precio} ',
-                        style: const TextStyle(
-                            fontSize: 12.0, fontWeight: FontWeight.bold),
-                      ),
-                      //Text('Detalle: ${snapshot.data![index]!.detalles} '),
-                      Text('Cantidad: ${snapshot.data![index]!.cantidad} '),
-                       Text('Detalles: ${snapshot.data![index]!.detalles} '),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ActualizarCantidad(
-                                      snapshot.data?[index])));
-                        },
-                        icon: const Icon(Icons.edit),
-                        label: const Text('Cantidad'),
-                      ),
-                      TextButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) =>
-                                          EditarProducto(snapshot.data?[index])));
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: const Text('Editar Producto'),
-                          ),
-                    ],
-                  ),
-                );
+                return ListTile(
+                    title: Text('Producto: ${snapshot.data![index]!.id}'),
+                    subtitle: Column(
+                      children: [
+                        Text('Codigo: ${snapshot.data![index]!.codigo} '),
+                        Text('Nombre: ${snapshot.data![index]!.nombre} '),
+                        Text('Nombre: ${snapshot.data![index]!.precio} '),
+                        Text('Detalle: ${snapshot.data![index]!.detalles} '),
+                        Text('Cantidad: ${snapshot.data![index]!.cantidad} '),
+                        // boton cambiar cantidad
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ActualizarCantidad(
+                                        snapshot.data?[index])));
+                          },
+                          icon: const Icon(Icons.edit),
+                          label: const Text('Cantidad'),
+                        ),
+                        // boton editar producto
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        EditarProducto(snapshot.data?[index])));
+                          },
+                          icon: const Icon(Icons.edit),
+                          label: const Text('Editar Producto'),
+                        ),
+                      ],
+                    ));
               },
             );
           } else {
@@ -166,6 +153,7 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          // BOTON CREAR PRODUCTO --------------------
           FloatingActionButton(
             onPressed: () {
               guardarDatos();
@@ -184,40 +172,50 @@ class _listarProductoTarjeta extends State<listarProductoTarjeta> {
   guardarDatos() async {
 //crear un producto
 
-    /* ProductoProvider.nuevoProducto(ProductoModel(
-        id: 1,
-        codigo: 'sss',
-        nombre: 'destornillador',
-        cantidad: 30,
-        creadoPor: 1));
-
+/**
     ProductoProvider.nuevoProducto(ProductoModel(
-        id: 2,
         codigo: 'A-1',
         nombre: 'Cemento blanco 25kg',
+        precio: 36500,
         detalles: 'Medio bulto cemento blanco - 25 kg',
         cantidad: 25,
-        creadoPor: 1));
-        
+        foto: 'assets/cementoB.jpeg',
+        creadoPor: 1,
+        id: null));
+
     ProductoProvider.nuevoProducto(ProductoModel(
-        id: 3,
+        codigo: 'A-2',
+        nombre: 'Cemento Gris 50kg',
+        precio: 33000,
+        detalles: 'Bulto cemento gris - 50 kg',
+        cantidad: 30,
+        foto: 'assets/cementoG.jpeg',
+        creadoPor: 1,
+        id: null));
+
+    ProductoProvider.nuevoProducto(ProductoModel(
         codigo: 'B-1',
         nombre: 'codo pvc ½',
+        precio: 1200,
         detalles: 'Accesorio pvc de ½',
         cantidad: 100,
-        creadoPor: 1));
+        foto: 'assets/codo.jpeg',
+        creadoPor: 1,
+        id: null));
 
     ProductoProvider.nuevoProducto(ProductoModel(
-        id: 4,
         codigo: 'B-2',
         nombre: 'Adaptador macho pvc ½',
+        precio: 1200,
         detalles: 'Accesorio pvc de ½',
         cantidad: 50,
-        creadoPor: 1));
-
+        foto: 'assets/adaptadorM.jpeg',
+        creadoPor: 1,
+        id: null));
+ */
     //imprimir los productos y usuarios creados
-*/
-    ProductoProvider.getProductos();
+
+    ProductoProvider.getProductosOrdenados();
     //  ProductoProvider.nuevoProducto(ProductoModel(id: 2, codigo: 'sss', nombre: 'destornillador', creadoPor: 7));
   }
 

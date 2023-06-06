@@ -51,12 +51,42 @@ class ProductoProvider {
     try {
       final db = await _database;
       final resultado = await db?.query('Productos');
+<<<<<<< HEAD
 
       List<ProductoModel> lista = resultado!.isNotEmpty
           ? resultado.map((e) => ProductoModel.fromJson(e)).toList()
           : [];
       lista.forEach((e) => print(
           'Nombre: ${e.nombre}, Codigo: ${e.codigo}, ID: ${e.id}, cantidad: ${e.cantidad} creado por: ${e.creadoPor}'));
+=======
+
+      List<ProductoModel> lista = resultado!.isNotEmpty
+          ? resultado.map((e) => ProductoModel.fromJson(e)).toList()
+          : [];
+      lista.forEach((e) => print(
+          'Nombre: ${e.nombre}, Codigo: ${e.codigo}, ID: ${e.id}, cantidad: ${e.cantidad} creado por: ${e.creadoPor}'));
+
+      return lista;
+    } on DatabaseException {
+      rethrow;
+    }
+  }
+
+      static Future<List<ProductoModel?>> getProductosOrdenados() async {
+    try{
+final db = await _database;
+    final resultado = await db?.query('Productos');
+
+    List<ProductoModel> lista = resultado!.isNotEmpty
+        ? resultado.map((e) => ProductoModel.fromJson(e)).toList()
+        : [];
+    lista.sort((a, b){ //sorting in ascending order
+        return a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase());
+    });  
+
+    lista.forEach((e) => print(
+        'Nombre: ${e.nombre}, Codigo: ${e.codigo}, ID: ${e.id}, cantidad: ${e.cantidad} creado por: ${e.creadoPor}'));
+>>>>>>> 79552e875b76091368bde93d23030dacf6edb452
 
       return lista;
     } on DatabaseException {
