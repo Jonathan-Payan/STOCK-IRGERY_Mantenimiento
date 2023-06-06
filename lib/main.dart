@@ -4,6 +4,10 @@ import 'package:hola_mundo/src/providers/usuario_provider.dart';
 import 'package:hola_mundo/src/models/producto_model.dart';
 import 'package:hola_mundo/src/models/flujo_inventario_model.dart';
 import 'package:hola_mundo/src/models/usuario_model.dart';
+import 'package:flutter/material.dart';
+import 'package:hola_mundo/src/views/listaUsuario.dart';
+
+
 
 
 void insertarDatosDePrueba() async {
@@ -76,6 +80,21 @@ print('Datos de prueba insertados correctamente');
 
 
 
+void main() {
+  runApp(MyApp());
+}
 
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Mi Aplicación',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: listaUsuario(),
+    );
+  }
+}
 
 
