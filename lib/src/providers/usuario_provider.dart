@@ -90,8 +90,6 @@ class UsuarioProvider {
     try {
       final db = await _database;
       final resultado = await db!.rawDelete('DELETE FROM Usuarios');
-      print('TODOS LOS USUARIOS ELIMINADOS');
-
       return resultado;
     } on DatabaseException {
       rethrow;
